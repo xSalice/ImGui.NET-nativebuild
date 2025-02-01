@@ -40,6 +40,24 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
+      - name: Patch ImGui Files
+        shell: bash
+        env:
+          GITHUB_OS: ${{ matrix.os }}
+        run: |
+          # First verify the files exist
+          if [ ! -f "cimgui/imgui/backends/imgui_impl_win32.h" ]; then
+            echo "Error: imgui_impl_win32.h not found at expected path"
+            ls -R cimgui/imgui/
+            exit 1
+          fi
+          
+          if [ "$GITHUB_OS" == "windows-latest" ]; then
+            powershell -Command "(Get-Content cimgui/imgui/backends/imgui_impl_win32.h) | Where-Object { \$_ -notmatch '^#if 0\$|^#endif\$' } | Set-Content cimgui/imgui/backends/imgui_impl_win32.h"
+          else
+            sed -i -e '/#if 0/d' -e '/#endif/d' cimgui/imgui/backends/imgui_impl_win32.h
+          fi
+
       - name: Setup .NET
         if: matrix.os == 'windows-latest'
         uses: actions/setup-dotnet@v4
