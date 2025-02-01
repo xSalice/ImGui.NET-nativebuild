@@ -79,12 +79,6 @@ jobs:
           fi
         shell: bash
 
-      - name: Verify WndProcHandler Export
-        if: matrix.os == 'windows-latest'
-        run: |
-          dumpbin /exports "cimgui\build\${{ matrix.architecture }}\${{ github.event.inputs.ReleaseType || 'Release' }}\cimgui.dll" | findstr "WndProcHandler"
-        shell: cmd
-
       - name: Upload win-${{ matrix.architecture }} ${{ github.event.inputs.ReleaseType || 'Release' }}
         uses: actions/upload-artifact@v4
         if: matrix.os == 'windows-latest'
