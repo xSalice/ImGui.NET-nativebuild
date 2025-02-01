@@ -55,7 +55,9 @@ jobs:
           if [ "$GITHUB_OS" == "windows-latest" ]; then
             powershell -Command "(Get-Content cimgui/imgui/backends/imgui_impl_win32.h) | Where-Object { \$_ -notmatch '^#if 0\$|^#endif\$' } | Set-Content cimgui/imgui/backends/imgui_impl_win32.h"
           else
-            sed -i -e '/#if 0/d' -e '/#endif/d' cimgui/imgui/backends/imgui_impl_win32.h
+            # Read file and filter out the specific lines
+            grep -v '^#if 0$\|^#endif$' cimgui/imgui/backends/imgui_impl_win32.h > tmpfile
+            mv tmpfile cimgui/imgui/backends/imgui_impl_win32.h
           fi
 
       - name: Setup .NET
