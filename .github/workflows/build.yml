@@ -54,10 +54,10 @@ jobs:
           if [ "$GITHUB_OS" == "windows-latest" ]; then
             # Create a temporary PowerShell script
             cat > remove_blocks.ps1 << 'EOF'
-            $content = Get-Content "cimgui/imgui/backends/imgui_impl_win32.h"
-            $content | Where-Object { 
-                $_ -notmatch '^\s*#if 0\s*$' -and 
-                $_ -notmatch '^\s*#endif\s*$' 
+            \$content = Get-Content "cimgui/imgui/backends/imgui_impl_win32.h"
+            \$content | Where-Object { 
+                \$_ -notmatch '^\s*#if 0\s*$' -and 
+                \$_ -notmatch '^\s*#endif\s*$' 
             } | Set-Content "cimgui/imgui/backends/imgui_impl_win32.h"
             EOF
             
