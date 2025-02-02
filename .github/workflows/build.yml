@@ -52,46 +52,7 @@ jobs:
           fi
           
           if [ "$GITHUB_OS" == "windows-latest" ]; then
-            echo "Debug: Starting PowerShell file modification"
-            
-            # Patch imgui_impl_win32.h
-            powershell -Command '
-              $file = "cimgui/imgui/backends/imgui_impl_win32.h"
-              $content = Get-Content $file
-              
-              # Create new content with windows.h include after pragma once
-              $modified = $content | ForEach-Object {
-                if ($_ -match "#pragma once") {
-                  "$_", "#include <windows.h>      // For Windows APIs"
-                }
-                elseif ($_ -notmatch "^\s*#if 0\s*$" -and $_ -notmatch "^\s*#endif\s*$") {
-                  if ($_ -match "^extern\s+") {
-                    $_ -replace "^extern\s+",""
-                  } else {
-                    $_
-                  }
-                }
-              }
-              
-              $modified | Set-Content $file
-              Write-Host "Debug: Modifications complete for .h file"
-            '
-
-            # Patch imgui_impl_win32.cpp
-            powershell -Command '
-              $file = "cimgui/imgui/backends/imgui_impl_win32.cpp"
-              $content = Get-Content $file | Where-Object {
-                -not ($_ -match "extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler.*" -or
-                      $_ -match "extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandlerEx.*")
-              }
-              $content | Set-Content $file
-              Write-Host "Debug: Modifications complete for .cpp file"
-            '
-            
-            echo "Debug: File content after modification (.h):"
-            cat cimgui/imgui/backends/imgui_impl_win32.h
-            echo "Debug: File content after modification (.cpp):"
-            cat cimgui/imgui/backends/imgui_impl_win32.cpp
+            powershell -File patch.ps1
           fi
 
       - name: Setup .NET
