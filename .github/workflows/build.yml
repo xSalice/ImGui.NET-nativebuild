@@ -52,8 +52,35 @@ jobs:
           fi
           
           if [ "$GITHUB_OS" == "windows-latest" ]; then
+            echo "Debug: Starting PowerShell file modification"
+            echo "Debug: File content before modification:"
+            cat cimgui/imgui/backends/imgui_impl_win32.h
+            
             # Remove #if 0, #endif blocks, and 'extern' keyword
-            powershell -Command '(Get-Content cimgui/imgui/backends/imgui_impl_win32.h) | Where-Object { $_ -notmatch "^\s*#if 0\s*$" -and $_ -notmatch "^\s*#endif\s*$" } | ForEach-Object { $_ -replace "^extern\s+","" } | Set-Content cimgui/imgui/backends/imgui_impl_win32.h'
+            powershell -Command '
+              $file = "cimgui/imgui/backends/imgui_impl_win32.h"
+              $content = Get-Content $file
+              Write-Host "Debug: Found $(($content | Measure-Object -Line).Lines) lines in file"
+              
+              $filtered = $content | Where-Object { 
+                $match = $_ -notmatch "^\s*#if 0\s*$" -and $_ -notmatch "^\s*#endif\s*$"
+                if (!$match) { Write-Host "Debug: Removing line: $_" }
+                $match
+              }
+              
+              $modified = $filtered | ForEach-Object {
+                if ($_ -match "^extern\s+") { 
+                  Write-Host "Debug: Removing extern from: $_"
+                  $_ -replace "^extern\s+",""
+                } else { $_ }
+              }
+              
+              $modified | Set-Content $file
+              Write-Host "Debug: Final line count: $(($modified | Measure-Object -Line).Lines)"
+            '
+            
+            echo "Debug: File content after modification:"
+            cat cimgui/imgui/backends/imgui_impl_win32.h
           fi
 
       - name: Setup .NET
