@@ -19,7 +19,10 @@ $cppContent = $cppContent -replace 'extern IMGUI_IMPL_API LRESULT ImGui_ImplWin3
 $cppContent = $cppContent -replace 'extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandlerEx\(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, ImGuiIO& io\);.*?\r?\n', ''
 
 # Add the new forward declaration after UpdateMonitors
-$cppContent = $cppContent -replace 'static void ImGui_ImplWin32_UpdateMonitors\(\);', "static void ImGui_ImplWin32_UpdateMonitors();`nstatic LRESULT ImGui_ImplWin32_WndProcHandlerEx(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, ImGuiIO& io);"
+$cppContent = $cppContent -replace 'static void ImGui_ImplWin32_UpdateMonitors\(\);', "static void ImGui_ImplWin32_UpdateMonitors();`nstatic LRESULT CALLBACK ImGui_ImplWin32_WndProcHandlerEx(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, ImGuiIO& io);"
+
+# Update the function definition
+$cppContent = $cppContent -replace 'IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandlerEx\(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, ImGuiIO& io\)', 'IMGUI_IMPL_API LRESULT CALLBACK ImGui_ImplWin32_WndProcHandlerEx(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, ImGuiIO& io)'
 
 Set-Content -Path $cppFile -Value $cppContent -NoNewline
 
