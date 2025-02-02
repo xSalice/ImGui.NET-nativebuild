@@ -5,6 +5,10 @@ $cppFile = "cimgui/imgui/backends/imgui_impl_win32.cpp"
 # Patch the header file
 Write-Host "Patching $headerFile..."
 $headerContent = Get-Content $headerFile -Raw
+# Add windows.h include after #pragma once if it's not already present
+if (-not ($headerContent -match '#include <windows.h>')) {
+    $headerContent = $headerContent -replace '#pragma once', "#pragma once`n#include <windows.h>"
+}
 $headerContent = $headerContent -replace '#if 0\r?\nextern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler\(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam\);\r?\n#endif', 'IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);'
 Set-Content -Path $headerFile -Value $headerContent -NoNewline
 
