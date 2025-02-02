@@ -52,15 +52,10 @@ jobs:
           fi
           
           if [ "$GITHUB_OS" == "windows-latest" ]; then
-            powershell -Command "(Get-Content cimgui/imgui/backends/imgui_impl_win32.h) | Where-Object { \$_ -notmatch '^\\s*#if 0\\s*\$' -and \$_ -notmatch '^\\s*#endif\\s*\$' } | Set-Content cimgui/imgui/backends/imgui_impl_win32.h"
-            
-            powershell -Command "(Get-Content cimgui/imgui/backends/imgui_impl_win32.cpp) | Where-Object { \$_ -notmatch '// Copy either line into your \\.cpp file' -and \$_ -notmatch 'extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler' -and \$_ -notmatch 'extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandlerEx' } | Set-Content cimgui/imgui/backends/imgui_impl_win32.cpp"
+            powershell -Command "(Get-Content cimgui/imgui/backends/imgui_impl_win32.h) | Where-Object { \$_ -notmatch '^\\s*#if 0\\s*\$' -and \$_ -notmatch '^\\s*#endif\\s*\$' } | Set-Content cimgui/imgui/backends/imgui_impl_win32.h"        
           else
             awk '/^#if 0 \/\/ \[DPI_AWARENESS_CONTEXT\]/,/^#endif/ {next} {print}' cimgui/imgui/backends/imgui_impl_win32.h > tmpfile
             mv tmpfile cimgui/imgui/backends/imgui_impl_win32.h
-            
-            awk '!/\/\/ Copy either line into your \.cpp file/ && !/extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler/ && !/extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandlerEx/' cimgui/imgui/backends/imgui_impl_win32.cpp > tmpfile
-            mv tmpfile cimgui/imgui/backends/imgui_impl_win32.cpp
           fi
 
       - name: Setup .NET
