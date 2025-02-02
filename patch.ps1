@@ -17,6 +17,10 @@ Write-Host "Patching $cppFile..."
 $cppContent = Get-Content $cppFile -Raw
 $cppContent = $cppContent -replace 'extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler\(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam\);.*?\r?\n', ''
 $cppContent = $cppContent -replace 'extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandlerEx\(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, ImGuiIO& io\);.*?\r?\n', ''
+
+# Add the new forward declaration after UpdateMonitors
+$cppContent = $cppContent -replace 'static void ImGui_ImplWin32_UpdateMonitors\(\);', "static void ImGui_ImplWin32_UpdateMonitors();`nstatic LRESULT ImGui_ImplWin32_WndProcHandlerEx(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, ImGuiIO& io);"
+
 Set-Content -Path $cppFile -Value $cppContent -NoNewline
 
 Write-Host "Patching complete!"
