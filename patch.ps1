@@ -22,7 +22,7 @@ $cppContent = $cppContent -replace 'extern IMGUI_IMPL_API LRESULT ImGui_ImplWin3
 $cppContent = $cppContent -replace 'static void ImGui_ImplWin32_UpdateMonitors\(\);', "static void ImGui_ImplWin32_UpdateMonitors();`nstatic LRESULT CALLBACK ImGui_ImplWin32_WndProcHandlerEx(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, ImGuiIO& io);"
 
 # Update the function definition
-$cppContent = $cppContent -replace 'IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandlerEx\(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, ImGuiIO& io\)', 'static LRESULT ImGui_ImplWin32_WndProcHandlerEx(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, ImGuiIO& io)'
+$cppContent = $cppContent -replace 'IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandlerEx\(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, ImGuiIO& io\)', 'static LRESULT CALLBACK ImGui_ImplWin32_WndProcHandlerEx(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, ImGuiIO& io)'
 
 Set-Content -Path $cppFile -Value $cppContent -NoNewline
 
