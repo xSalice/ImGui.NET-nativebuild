@@ -53,7 +53,7 @@ jobs:
           
           if [ "$GITHUB_OS" == "windows-latest" ]; then
             # Remove #if 0, #endif blocks, and 'extern' keyword
-            powershell -Command "(Get-Content cimgui/imgui/backends/imgui_impl_win32.h) | Where-Object { `$_ -notmatch '^\s*#if 0\s*$' -and `$_ -notmatch '^\s*#endif\s*$' } | ForEach-Object { `$_ -replace '^extern\s+','' } | Set-Content cimgui/imgui/backends/imgui_impl_win32.h"
+            powershell -Command '(Get-Content cimgui/imgui/backends/imgui_impl_win32.h) | Where-Object { $_ -notmatch "^\s*#if 0\s*$" -and $_ -notmatch "^\s*#endif\s*$" } | ForEach-Object { $_ -replace "^extern\s+","" } | Set-Content cimgui/imgui/backends/imgui_impl_win32.h'
           fi
 
       - name: Setup .NET
