@@ -54,6 +54,7 @@ jobs:
           if [ "$GITHUB_OS" == "windows-latest" ]; then
             echo "Debug: Starting PowerShell file modification"
             
+            # Patch imgui_impl_win32.h
             powershell -Command '
               $file = "cimgui/imgui/backends/imgui_impl_win32.h"
               $content = Get-Content $file
@@ -73,11 +74,24 @@ jobs:
               }
               
               $modified | Set-Content $file
-              Write-Host "Debug: Modifications complete"
+              Write-Host "Debug: Modifications complete for .h file"
+            '
+
+            # Patch imgui_impl_win32.cpp
+            powershell -Command '
+              $file = "cimgui/imgui/backends/imgui_impl_win32.cpp"
+              $content = Get-Content $file | Where-Object {
+                -not ($_ -match "extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler.*" -or
+                      $_ -match "extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandlerEx.*")
+              }
+              $content | Set-Content $file
+              Write-Host "Debug: Modifications complete for .cpp file"
             '
             
-            echo "Debug: File content after modification:"
+            echo "Debug: File content after modification (.h):"
             cat cimgui/imgui/backends/imgui_impl_win32.h
+            echo "Debug: File content after modification (.cpp):"
+            cat cimgui/imgui/backends/imgui_impl_win32.cpp
           fi
 
       - name: Setup .NET
