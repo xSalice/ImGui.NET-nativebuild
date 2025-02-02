@@ -52,8 +52,17 @@ jobs:
           fi
           
           if [ "$GITHUB_OS" == "windows-latest" ]; then
-            # Remove #if 0 and #endif blocks
-            powershell -Command "(Get-Content cimgui/imgui/backends/imgui_impl_win32.h) | Where-Object { `$_ -notmatch '^\s*#if 0\s*$' -and `$_ -notmatch '^\s*#endif\s*$' } | ForEach-Object { `$_ -replace 'extern ', '' } | Set-Content cimgui/imgui/backends/imgui_impl_win32.h"
+            # Create a temporary PowerShell script
+            cat > remove_blocks.ps1 << 'EOF'
+            $content = Get-Content "cimgui/imgui/backends/imgui_impl_win32.h"
+            $content | Where-Object { 
+                $_ -notmatch '^\s*#if 0\s*$' -and 
+                $_ -notmatch '^\s*#endif\s*$' 
+            } | Set-Content "cimgui/imgui/backends/imgui_impl_win32.h"
+            EOF
+            
+            # Execute the script
+            powershell -File remove_blocks.ps1
           else
             # Read file and filter out only the DPI awareness block
             awk '/^#if 0 \/\/ \[DPI_AWARENESS_CONTEXT\]/,/^#endif/ {next} {print}' cimgui/imgui/backends/imgui_impl_win32.h > tmpfile
